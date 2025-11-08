@@ -1,5 +1,26 @@
-import ZombieGps from './NativeZombieGps';
+import { NativeModules, NativeEventEmitter } from 'react-native';
 
-export function multiply(a: number, b: number): number {
-  return ZombieGps.multiply(a, b);
+const { ZombieGps } = NativeModules;
+
+const emitter = new NativeEventEmitter(ZombieGps);
+
+export type ZombieLocation = {
+  latitude: number;
+  longitude: number;
+  timestamp: number;
+};
+
+export function startMonitoring() {
+  ZombieGps.startMonitoring();
+}
+
+export function stopMonitoring() {
+  ZombieGps.stopMonitoring();
+}
+
+export function addListener(callback: (location: ZombieLocation) => void) {
+  return emitter.addListener('ZombieGPSLocation', (...args: unknown[]) => {
+    const [payload] = args;
+    callback(payload as ZombieLocation);
+  });
 }

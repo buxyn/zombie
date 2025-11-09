@@ -1,21 +1,51 @@
 import { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
+import { Platform, SafeAreaView, StyleSheet, Text } from 'react-native';
 import {
   ready,
   startMonitoring,
   addListener,
   type ZombieLocation,
 } from 'react-native-zombie-gps';
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const SUPABASE_URL = 'SUPABASE_URL';
 const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY';
 const SUPABASE_TABLE = 'SUPABASE_TABLE';
+
+export async function requestLocationAlways() {
+  if (Platform.OS !== 'ios') {
+    return;
+  }
+
+  const status = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
+
+  switch (status) {
+    case RESULTS.GRANTED:
+      console.log('✅ 常に許可が取れました');
+      break;
+
+    case RESULTS.LIMITED:
+    case RESULTS.DENIED:
+      console.log('⚠️ まだ許可されていません');
+      break;
+
+    case RESULTS.BLOCKED:
+      console.log('❌ 拒否されています（設定アプリで変更が必要）');
+      break;
+
+    default:
+      break;
+  }
+
+  return status;
+}
 
 export default function App() {
   const [location, setLocation] = useState<ZombieLocation | null>(null);
 
   useEffect(() => {
     console.log('App started');
+    requestLocationAlways();
     addListener((loc: ZombieLocation) => {
       console.log('SLC:', loc);
       setLocation(loc);

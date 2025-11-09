@@ -10220,6 +10220,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-permissions@npm:^5.4.4":
+  version: 5.4.4
+  resolution: "react-native-permissions@npm:5.4.4"
+  peerDependencies:
+    react: ">=18.1.0"
+    react-native: ">=0.70.0"
+    react-native-windows: ">=0.70.0"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 43deb38d03321c6b23c7f9f6e1561a629e3aff1e4be20e643ff85010f040b82d707a7db43179108a203663cd138da2f3b6d954f1b278f44ed85797ec49bbacb1
+  languageName: node
+  linkType: hard
+
 "react-native-zombie-gps-example@workspace:example":
   version: 0.0.0-use.local
   resolution: "react-native-zombie-gps-example@workspace:example"
@@ -10238,6 +10252,7 @@ __metadata:
     react-native: 0.81.1
     react-native-builder-bob: ^0.40.13
     react-native-monorepo-config: ^0.1.9
+    react-native-permissions: ^5.4.4
   languageName: unknown
   linkType: soft
 

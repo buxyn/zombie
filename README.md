@@ -1,4 +1,5 @@
 # Zombie
+
 <img src="./ZombieIcon.png" width=400px height=400px>
 
 A React Native module for persistent background location tracking that keeps working even after the app is killed.
@@ -16,12 +17,25 @@ yarn add react-native-zombie-gps
 ```ts
 import {
   addListener,
+  ready,
   startMonitoring,
   stopMonitoring,
 } from 'react-native-zombie-gps';
 
 async function bootstrapZombieGps() {
-  addListener((location) => {
+  await ready({
+    apiURL: 'https://example.supabase.co/rest/v1/locations',
+    headers: {
+      'apikey': 'public-anon-key',
+      'Authorization': 'Bearer public-anon-key',
+      'Content-Type': 'application/json',
+    },
+    params: {
+      sessionId: 'demo-session',
+    },
+  });
+
+  const subscription = addListener((location) => {
     console.log(
       `lat=${location.latitude}, lng=${location.longitude} @ ${location.timestamp}`
     );
@@ -30,14 +44,13 @@ async function bootstrapZombieGps() {
   startMonitoring();
 
   return () => {
-    // subscription.remove?.();
-    // stopMonitoring();
+    subscription.remove?.();
+    stopMonitoring();
   };
 }
 ```
 
-See `example/src/App.tsx` for a UI example that renders the active coordinates.
-
+`ready` persists the upload config natively so that when iOS restarts the app in the background the native module can continue POSTing payloads shaped as `{ lat, lng, timestamp, params }` even before the React Native bridge is alive. See `example/src/App.tsx` for a UI example that renders the active coordinates and configures a Supabase endpoint.
 
 ## Development
 

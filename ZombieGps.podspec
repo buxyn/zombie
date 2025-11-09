@@ -14,7 +14,10 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/nanikasi/react-native-zombie-gps.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,cpp}"
-  s.private_header_files = "ios/**/*.h"
+  s.public_header_files = [
+    "ios/ZombieGps.h",
+    "ios/ZombieGpsBackgroundWorker.h",
+  ]
 
 
   install_modules_dependencies(s)

@@ -1,7 +1,8 @@
 #import "ZombieGps.h"
+#import "ZombieGpsBackgroundWorker.h"
 
-@interface ZombieGps ()
-@property (nonatomic, strong) CLLocationManager *locationManager;
+@interface ZombieGps () <ZombieGpsBackgroundWorkerDelegate>
+@property (nonatomic, strong) ZombieGpsBackgroundWorker *worker;
 @end
 
 @implementation ZombieGps
@@ -10,33 +11,49 @@ RCT_EXPORT_MODULE();
 
 - (instancetype)init {
   if (self = [super init]) {
-    self.locationManager = [[CLLocationManager alloc] init];
-    self.locationManager.delegate = self;
-    self.locationManager.pausesLocationUpdatesAutomatically = NO;
-    self.locationManager.allowsBackgroundLocationUpdates = YES;
+    _worker = [ZombieGpsBackgroundWorker sharedWorker];
+    _worker.delegate = self;
   }
   return self;
 }
 
+RCT_EXPORT_METHOD(ready:(NSDictionary *)config
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  __weak typeof(self) weakSelf = self;
+  [self.worker configureWithDictionary:config
+  resolve:^{
+    if (resolve) {
+      resolve(@(YES));
+    }
+    weakSelf.worker.delegate = weakSelf;
+  }
+  reject:^(NSString *code, NSString *message, NSError *error) {
+    if (reject) {
+      reject(code, message, error);
+    }
+  }];
+}
+
 RCT_EXPORT_METHOD(startMonitoring) {
-  [self.locationManager startMonitoringSignificantLocationChanges];
+  [self.worker startMonitoring];
 }
 
 RCT_EXPORT_METHOD(stopMonitoring) {
-  [self.locationManager stopMonitoringSignificantLocationChanges];
+  [self.worker stopMonitoring];
 }
 
-- (void)locationManager:(CLLocationManager *)manager
-     didUpdateLocations:(NSArray<CLLocation *> *)locations
-{
-  CLLocation *loc = [locations lastObject];
-  if (!loc) return;
+- (void)zombieGpsWorkerDidUpdateLocation:(CLLocation *)location {
+  if (!self.bridge) {
+    return;
+  }
 
   [self sendEventWithName:@"ZombieGPSLocation"
     body:@{
-      @"latitude": @(loc.coordinate.latitude),
-      @"longitude": @(loc.coordinate.longitude),
-      @"timestamp": @(loc.timestamp.timeIntervalSince1970)
+      @"latitude": @(location.coordinate.latitude),
+      @"longitude": @(location.coordinate.longitude),
+      @"timestamp": @(location.timestamp.timeIntervalSince1970)
     }];
 }
 

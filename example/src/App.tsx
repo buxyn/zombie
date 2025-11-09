@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import {
+  ready,
   startMonitoring,
   addListener,
   type ZombieLocation,
 } from 'react-native-zombie-gps';
+
+const SUPABASE_URL = 'SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY';
+const SUPABASE_TABLE = 'SUPABASE_TABLE';
 
 export default function App() {
   const [location, setLocation] = useState<ZombieLocation | null>(null);
@@ -16,7 +21,30 @@ export default function App() {
       setLocation(loc);
     });
 
-    startMonitoring();
+    let mounted = true;
+    (async () => {
+      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        console.warn('Configure Supabase credentials to enable uploads.');
+        return;
+      }
+
+      try {
+        await ready({
+          apiURL: `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`,
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (mounted) {
+          startMonitoring();
+        }
+      } catch (error) {
+        console.error('Failed to configure Zombie GPS upload target', error);
+      }
+    })();
   }, []);
 
   return (

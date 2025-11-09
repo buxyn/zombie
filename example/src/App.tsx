@@ -11,16 +11,12 @@ export default function App() {
 
   useEffect(() => {
     console.log('App started');
-    const subscription = addListener((loc: ZombieLocation) => {
+    addListener((loc: ZombieLocation) => {
       console.log('SLC:', loc);
       setLocation(loc);
     });
 
     startMonitoring();
-
-    return () => {
-      subscription.remove?.();
-    };
   }, []);
 
   return (

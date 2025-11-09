@@ -1,6 +1,6 @@
 # Zombie
 
-<img src="./ZombieIcon.png" width=400px height=400px>
+<img src="./assets/ZombieIcon.png" width=400px height=400px>
 
 A React Native module for persistent background location tracking that keeps working even after the app is killed.
 

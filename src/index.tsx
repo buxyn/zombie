@@ -10,6 +10,8 @@ export type ZombieGpsReadyConfig = {
   apiURL: string;
   headers?: Record<string, string>;
   params?: Record<string, unknown>;
+  locationFormat?: 'latLng' | 'geohash' | 'both';
+  geohashLength?: number;
 };
 
 type ZombieGpsNativeModule = {

@@ -1,5 +1,7 @@
+// ZombieGpsBackgroundWorker.m
 #import "ZombieGpsBackgroundWorker.h"
 #import <React/RCTLog.h>
+#import "GeohashHelper.h"
 
 static NSString *const kZombieGpsUploadConfigDefaultsKey = @"ZombieGpsUploadConfig";
 
@@ -81,6 +83,20 @@ static NSString *const kZombieGpsUploadConfigDefaultsKey = @"ZombieGpsUploadConf
     normalized[@"params"] = params;
   }
 
+  NSString *locationFormat = config[@"locationFormat"];
+  if ([locationFormat isKindOfClass:[NSString class]] && locationFormat.length > 0) {
+    normalized[@"locationFormat"] = locationFormat;
+  } else {
+    normalized[@"locationFormat"] = @"both";
+  }
+
+  NSNumber *geohashLength = config[@"geohashLength"];
+  if ([geohashLength isKindOfClass:[NSNumber class]]) {
+    normalized[@"geohashLength"] = geohashLength;
+  } else {
+    normalized[@"geohashLength"] = @(12);
+  }
+
   self.uploadConfig = [normalized copy];
 
   [[NSUserDefaults standardUserDefaults] setObject:self.uploadConfig
@@ -123,6 +139,35 @@ static NSString *const kZombieGpsUploadConfigDefaultsKey = @"ZombieGpsUploadConf
     return;
   }
 
+  NSString *format = config[@"locationFormat"]; // "latLng", "geohash", "both"
+  if (!format) format = @"both";
+
+  NSNumber *lengthNum = config[@"geohashLength"];
+  int length = (lengthNum != nil) ? [lengthNum intValue] : 12;
+  if (length < 1) length = 1;
+  if (length > 12) length = 12;
+
+  NSMutableDictionary *body = [NSMutableDictionary dictionary];
+
+  BOOL includeLatLng = [format isEqualToString:@"latLng"] || [format isEqualToString:@"both"];
+  if (includeLatLng) {
+    body[@"latitude"] = @(location.coordinate.latitude);
+    body[@"longitude"] = @(location.coordinate.longitude);
+  }
+
+  BOOL includeGeohash = [format isEqualToString:@"geohash"] || [format isEqualToString:@"both"];
+  if (includeGeohash) {
+    NSString *geohash = [GeohashHelper geohashFromLatitude:location.coordinate.latitude
+                                                 longitude:location.coordinate.longitude
+                                                    length:length];
+    body[@"geohash"] = geohash;
+  }
+
+  NSDictionary *params = config[@"params"];
+  if ([params isKindOfClass:[NSDictionary class]]) {
+    body[@"params"] = params;
+  }
+
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   request.HTTPMethod = @"POST";
 
@@ -133,16 +178,6 @@ static NSString *const kZombieGpsUploadConfigDefaultsKey = @"ZombieGpsUploadConf
         [request setValue:(NSString *)obj forHTTPHeaderField:(NSString *)key];
       }
     }];
-  }
-
-  NSMutableDictionary *body = [@{
-    @"latitude": @(location.coordinate.latitude),
-    @"longitude": @(location.coordinate.longitude),
-  } mutableCopy];
-
-  NSDictionary *params = config[@"params"];
-  if ([params isKindOfClass:[NSDictionary class]]) {
-    body[@"params"] = params;
   }
 
   NSError *jsonError = nil;

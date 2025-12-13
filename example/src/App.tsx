@@ -66,6 +66,8 @@ export default function App() {
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json',
           },
+          locationFormat: "both",
+          geohashLength: 8,
         });
 
         if (mounted) {

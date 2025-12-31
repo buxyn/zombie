@@ -67,7 +67,7 @@ export default function App() {
             'Content-Type': 'application/json',
           },
           locationFormat: "both",
-          geohashLength: 8,
+          geohashLength: 6,
         });
 
         if (mounted) {

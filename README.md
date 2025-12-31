@@ -33,6 +33,8 @@ async function bootstrapZombieGps() {
     params: {
       sessionId: 'demo-session',
     },
+    locationFormat: 'both', // 'latLng' | 'geohash' | 'both' (default: 'both')
+    geohashLength: 12,      // 1-12 (default: 12)
   });
 
   const subscription = addListener((location) => {
@@ -50,7 +52,19 @@ async function bootstrapZombieGps() {
 }
 ```
 
-`ready` persists the upload config natively so that when iOS restarts the app in the background the native module can continue POSTing payloads shaped as `{ lat, lng, timestamp, params }` even before the React Native bridge is alive. See `example/src/App.tsx` for a UI example that renders the active coordinates and configures a Supabase endpoint.
+`ready` persists the upload config natively so that when iOS restarts the app in the background the native module can continue POSTing payloads shaped as `{ lat, lng, timestamp, params }` (or with `geohash`) even before the React Native bridge is alive.
+
+### Configuration Options
+
+| Option | Type | Description |
+|---|---|---|
+| `apiURL` | `string` | **Required.** The HTTP endpoint to POST location data to. |
+| `headers` | `Record<string, string>` | Optional HTTP headers (e.g. Authorization). |
+| `params` | `Record<string, unknown>` | Optional static JSON body parameters to include in every upload. |
+| `locationFormat` | `'latLng' \| 'geohash' \| 'both'` | Shape of the location data in the body. Defaults to `'both'`. |
+| `geohashLength` | `number` | Precision of the geohash (1-12). Defaults to `12`. |
+
+See `example/src/App.tsx` for a UI example that renders the active coordinates and configures a Supabase endpoint.
 
 ## Development
 

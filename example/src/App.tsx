@@ -42,6 +42,7 @@ export async function requestLocationAlways() {
     console.log('Android Permission Status:', status);
     return status;
   }
+  return RESULTS.UNAVAILABLE;
 }
 
 export default function App() {
@@ -70,7 +71,7 @@ export default function App() {
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json',
           },
-          locationFormat: "both",
+          locationFormat: 'both',
           geohashLength: 6,
         });
 

@@ -84,8 +84,12 @@ class ZombieGpsModule(reactContext: ReactApplicationContext) :
       fusedLocationClient.removeLocationUpdates(pendingIntent)
   }
 
-  override fun multiply(a: Double, b: Double): Double {
-    return a * b
+  override fun addListener(eventName: String?) {
+    // Keep: Required for RN built-in Event Emitter Calls.
+  }
+
+  override fun removeListeners(count: Double) {
+    // Keep: Required for RN built-in Event Emitter Calls.
   }
 
   private fun sendEvent(eventName: String, params: Any?) {

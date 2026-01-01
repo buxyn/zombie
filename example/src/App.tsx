@@ -13,31 +13,35 @@ const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY';
 const SUPABASE_TABLE = 'SUPABASE_TABLE';
 
 export async function requestLocationAlways() {
-  if (Platform.OS !== 'ios') {
-    return;
+  if (Platform.OS === 'ios') {
+    const status = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
+
+    switch (status) {
+      case RESULTS.GRANTED:
+        console.log('✅ 常に許可が取れました');
+        break;
+
+      case RESULTS.LIMITED:
+      case RESULTS.DENIED:
+        console.log('⚠️ まだ許可されていません');
+        break;
+
+      case RESULTS.BLOCKED:
+        console.log('❌ 拒否されています（設定アプリで変更が必要）');
+        break;
+
+      default:
+        break;
+    }
+    return status;
+  } else if (Platform.OS === 'android') {
+    let status = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+    if (status === RESULTS.GRANTED) {
+      status = await request(PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION);
+    }
+    console.log('Android Permission Status:', status);
+    return status;
   }
-
-  const status = await request(PERMISSIONS.IOS.LOCATION_ALWAYS);
-
-  switch (status) {
-    case RESULTS.GRANTED:
-      console.log('✅ 常に許可が取れました');
-      break;
-
-    case RESULTS.LIMITED:
-    case RESULTS.DENIED:
-      console.log('⚠️ まだ許可されていません');
-      break;
-
-    case RESULTS.BLOCKED:
-      console.log('❌ 拒否されています（設定アプリで変更が必要）');
-      break;
-
-    default:
-      break;
-  }
-
-  return status;
 }
 
 export default function App() {

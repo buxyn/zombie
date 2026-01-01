@@ -19,6 +19,9 @@ Pod::Spec.new do |s|
     "ios/ZombieGps.h",
     "ios/ZombieGpsBackgroundWorker.h",
   ]
+  s.resource_bundles = {
+    'ZombieGps_Privacy' => ['ios/PrivacyInfo.xcprivacy']
+  }
 
 
   install_modules_dependencies(s)

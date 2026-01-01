@@ -51,14 +51,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nanikasi/react-native-zombie-gps.git"
+    "url": "git+https://github.com/buxyn/react-native-zombie-gps.git"
   },
   "author": "nanikasi <nanikasi1024@gmail.com> (https://github.com/nanikasi)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nanikasi/react-native-zombie-gps/issues"
+    "url": "https://github.com/buxyn/react-native-zombie-gps/issues"
   },
-  "homepage": "https://github.com/nanikasi/react-native-zombie-gps#readme",
+  "homepage": "https://github.com/buxyn/react-native-zombie-gps#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

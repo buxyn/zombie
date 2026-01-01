@@ -2283,7 +2283,7 @@ PODS:
     - Yoga
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
-  - ZombieGps (0.1.0):
+  - ZombieGps (0.1.1):
     - boost
     - DoubleConversion
     - fast_float
